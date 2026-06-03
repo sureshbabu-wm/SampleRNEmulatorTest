@@ -1,0 +1,16 @@
+{
+  "currentPlatformOs" : {
+    "_id" : "wm-currentPlatformOs-wm.Variable-1779357284017",
+    "name" : "currentPlatformOs",
+    "owner" : "Page",
+    "category" : "wm.Variable",
+    "dataBinding" : [ ],
+    "dataSet" : {
+      "dataValue" : ""
+    },
+    "type" : "string",
+    "isList" : false,
+    "twoWayBinding" : false,
+    "saveInPhonegap" : false
+  }
+}

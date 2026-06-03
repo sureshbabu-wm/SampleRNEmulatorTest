@@ -1,0 +1,28 @@
+{
+  "author": {
+    "name": "Suresh Babu M B",
+    "href": "",
+    "email": "suresh.bhaskar@wavemaker.com"
+  },
+  "buildMode": "DEV",
+  "icon": {
+    "src": "resources/assets/icon.png",
+    "width": 1024,
+    "height": 1024
+  },
+  "id": "com.wavemaker.samplernemulatortest",
+  "name": "SampleRNEmulatorTest",
+  "platformConfigs": [],
+  "plugins": [],
+  "preferences": {
+    "enableHermes": true,
+    "enableDesignTokens": true
+  },
+	"serverPath": "{{DEVELOPMENT_URL}}",
+  "splash": {
+    "src": "resources/assets/splash.png",
+    "width": 1284,
+    "height": 2778
+  },
+  "version": "0.0.1"
+}

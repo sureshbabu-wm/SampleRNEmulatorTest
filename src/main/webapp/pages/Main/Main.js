@@ -1,0 +1,2 @@
+Page.onReady = function () {
+};
