@@ -1,0 +1,58 @@
+# Codemagic CI/CD configuration
+# Reference: https://docs.codemagic.io/yaml-basic-configuration/yaml-getting-started/
+
+workflows:
+  ios-simulator-build:
+    name: iOS Simulator Build
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+    environment:
+      node: 22.11.0
+      xcode: latest
+      cocoapods: default
+    triggering:
+      events:
+        - push
+        - pull_request
+      branch_patterns:
+        - pattern: '*'
+          include: true
+    scripts:
+      - name: Parse Runtime UI Version
+        script: |
+          # Dynamically extract WaveMaker runtime UI version from pom.xml
+          RUNTIME_UI_VERSION=$(sed -n 's/.*<wavemaker.app.runtime.ui.version>\(.*\)<\/wavemaker.app.runtime.ui.version>.*/\1/p' pom.xml)
+          echo "Detected WaveMaker Runtime UI Version: $RUNTIME_UI_VERSION"
+          echo "RUNTIME_UI_VERSION=$RUNTIME_UI_VERSION" >> $CM_ENV
+      - name: Transpile WaveMaker project to React Native
+        script: |
+          # Run ui-build.js to transpile the project into generated-rn-app
+          node ui-build.js --runtimeUIVersion=$RUNTIME_UI_VERSION
+      - name: Install React Native App dependencies
+        script: |
+          cd generated-rn-app
+          npm install
+      - name: Prebuild Native iOS Project
+        script: |
+          cd generated-rn-app
+          EXPO_NO_GIT_STATUS=1 npx expo prebuild --platform ios --clean
+      - name: Build App for iOS Simulator
+        script: |
+          cd generated-rn-app
+          xcodebuild build \
+            -workspace ios/SampleRNEmulatorTest.xcworkspace \
+            -scheme SampleRNEmulatorTest \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            -configuration Debug \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY=""
+      - name: Package iOS Simulator App
+        script: |
+          # Package the compiled .app directory into a zip for easy sharing/installation
+          cd generated-rn-app/build/Build/Products/Debug-iphonesimulator
+          zip -r ../../../../SampleRNEmulatorTest.zip SampleRNEmulatorTest.app
+    artifacts:
+      - SampleRNEmulatorTest.zip
